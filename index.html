@@ -35,6 +35,37 @@ async function updateScore(name, points) {
   console.log("score updated", data);
 } 
 loadTasks();
+  async function showTasks(name) {
+
+  const { data, error } = await supabaseClient
+    .from("tasks")
+    .select("*")
+    .eq("name", name)
+    .limit(5)
+
+  const stack = document.getElementById("taskStack")
+  stack.innerHTML = ""
+
+  data.forEach(t => {
+
+    const card = document.createElement("div")
+    card.className = "task"
+
+    card.innerHTML = `
+      <div>${t.task}</div>
+      <div>⭐ ${t.points}</div>
+      <button onclick="completeTask('${t.id}',${t.points})">בוצע</button>
+      <button onclick="skipTask('${t.id}')">דלג</button>
+    `
+
+    stack.appendChild(card)
+
+  })
+
+  }
+  showTasks("מפל")
+  showTasks("מעיין")
+  showTasks("אמא")
 </script>
       
 🏡 המשימות של משפחת זמר
@@ -96,7 +127,6 @@ loadTasks();
     <div class="card">
       <div class="section-title"><h2>📊 סטטיסטיקה מהירה</h2><span class="badge">לאמא</span></div>
       <div class="stats-list" id="statsList"></div>
-      <div class="footer-note">בשלב הבא נוסיף סנכרון בזמן אמת בין כל המכשירים.</div>
     </div>
   </div>
 </div>
