@@ -6,7 +6,35 @@ const supabaseKey = "sb_publishable_9CrkiWBuHCSE6EAXmjOnpQ_uvQhB38Y"
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 </script>
+<script>
+async function loadTasks() {
+  const { data, error } = await supabaseClient
+    .from("tasks")
+    .select("*");
 
+  console.log("tasks", data);
+}
+
+async function addTask(name, task, points) {
+  const { data, error } = await supabaseClient
+    .from("tasks")
+    .insert([
+      { name: name, task: task, points: points, status: "open" }
+    ]);
+
+  console.log("added", data);
+}
+
+async function updateScore(name, points) {
+  const { data, error } = await supabaseClient
+    .from("scores")
+    .upsert([
+      { name: name, points: points }
+    ]);
+
+  console.log("score updated", data);
+}
+</script>
       
 🏡 המשימות של משפחת זמר
 
