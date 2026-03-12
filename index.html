@@ -84,7 +84,19 @@ loadTasks();
 
   const stack = document.getElementById("taskStack")
   stack.innerHTML = ""
+document.getElementById("profileName").innerText = name
 
+if (name === "מפל") {
+  document.getElementById("avatarEmoji").innerText = "🦋"
+}
+
+if (name === "מעיין") {
+  document.getElementById("avatarEmoji").innerText = "🌈"
+}
+
+if (name === "אמא") {
+  document.getElementById("avatarEmoji").innerText = "👑"
+}
   data.forEach(t => {
 
     const card = document.createElement("div")
