@@ -346,6 +346,15 @@ async function completeTask(id, points){
   completedCount += 1;
   updateScoreUI();
 
+  const { error: taskError } = await supabaseClient
+    .from("tasks")
+    .update({ status: "done" })
+    .eq("id", id);
+
+  if (taskError) {
+    console.log("task update error", taskError);
+  }
+
   const taskCard = document.querySelector('[data-task-id="' + id + '"]');
   if (taskCard) taskCard.remove();
 
@@ -359,16 +368,20 @@ async function skipTask(id){
   newCount += 1;
   updateScoreUI();
 
+  const { error: taskError } = await supabaseClient
+    .from("tasks")
+    .update({ status: "skipped" })
+    .eq("id", id);
+
+  if (taskError) {
+    console.log("task skip error", taskError);
+  }
+
   const taskCard = document.querySelector('[data-task-id="' + id + '"]');
   if (taskCard) taskCard.remove();
 }
-
-async function showTasks(name) {
-  currentUser = name;
-  currentScore = 0;
-  completedCount = 0;
-  skippedCount = 0;
-  newCount = 0;
+const fixedTasks = (data || []).filter(t => t.status === "fixed" || t.status === "daily");
+const openTasks = (data || []).filter(t => t.status === "open");
 
   const login = document.querySelector(".login-screen");
   const intro = document.querySelector(".page-intro");
