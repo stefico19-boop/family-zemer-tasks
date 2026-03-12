@@ -75,7 +75,7 @@ async function updateScore(name, points) {
 } 
 loadTasks();
   async function showTasks(name) {
-
+document.querySelector(".layout").style.display = "grid"
   const { data, error } = await supabaseClient
     .from("tasks")
     .select("*")
