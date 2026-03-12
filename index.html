@@ -75,53 +75,55 @@ async function updateScore(name, points) {
 } 
 loadTasks();
   async function showTasks(name) {
-  document.getElementById("mainLayout").style.display = "grid";
+  const mainLayout = document.getElementById("mainLayout");
   const stack = document.getElementById("taskStack");
-  stack.innerHTML = "";
+  const profileName = document.getElementById("profileName");
+  const avatarEmoji = document.getElementById("avatarEmoji");
 
-  document.getElementById("profileName").innerText = name;
-
-  if (name === "מפל") {
-    document.getElementById("avatarEmoji").innerText = "🦋";
-  } else if (name === "מעיין") {
-    document.getElementById("avatarEmoji").innerText = "🌈";
-  } else if (name === "אמא") {
-    document.getElementById("avatarEmoji").innerText = "👑";
+  if (mainLayout) {
+    mainLayout.style.display = "block";
   }
 
-  const { data: fixedTasks, error: fixedError } = await supabaseClient
+  if (stack) {
+    stack.innerHTML = "";
+  }
+
+  if (profileName) {
+    profileName.innerText = name;
+  }
+
+  if (avatarEmoji) {
+    if (name === "מפל") avatarEmoji.innerText = "🦋";
+    else if (name === "מעיין") avatarEmoji.innerText = "🌈";
+    else if (name === "אמא") avatarEmoji.innerText = "👑";
+  }
+
+  const { data, error } = await supabaseClient
     .from("tasks")
     .select("*")
-    .eq("name", name)
-    .eq("status", "fixed");
+    .eq("name", name);
 
-  const { data: openTasks, error: openError } = await supabaseClient
-    .from("tasks")
-    .select("*")
-    .eq("name", name)
-    .eq("status", "open");
-
-  if (fixedError || openError) {
-    console.log("supabase error", fixedError || openError);
-    stack.innerHTML = "<div>יש בעיה בטעינת המשימות</div>";
+  if (error) {
+    console.log("supabase error", error);
+    if (stack) stack.innerHTML = "<div>יש בעיה בטעינת המשימות</div>";
     return;
   }
 
-  const fixed = fixedTasks || [];
-  const open = openTasks || [];
+  const fixedTasks = (data || []).filter(t => t.status === "fixed");
+  const openTasks = (data || []).filter(t => t.status === "open");
 
-  const shuffled = [...open].sort(() => Math.random() - 0.5);
+  const shuffled = [...openTasks].sort(() => Math.random() - 0.5);
   const randomTasks = shuffled.filter(t => t.points < 20).slice(0, 3);
   const bonusTask = shuffled.find(t => t.points >= 20);
 
   const allTasks = [
-    ...fixed,
+    ...fixedTasks,
     ...randomTasks,
     ...(bonusTask ? [bonusTask] : [])
   ];
 
   if (allTasks.length === 0) {
-    stack.innerHTML = "<div>אין עדיין משימות להצגה</div>";
+    if (stack) stack.innerHTML = "<div>אין עדיין משימות להצגה</div>";
     return;
   }
 
@@ -140,8 +142,9 @@ loadTasks();
 
     stack.appendChild(card);
   });
-  }
+}
 
+window.showTasks = showTasks;
   }
 </script>
 
