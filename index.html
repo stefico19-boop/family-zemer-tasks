@@ -1,57 +1,324 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
 
+<style>
 body{
-direction:rtl;
-font-family:Heebo, Arial;
-background:#f6f8ff;
+  direction:rtl;
+  font-family:Heebo, Arial, sans-serif;
+  background:#f6f8ff;
+  margin:0;
+  padding:0;
+  color:#1f2340;
 }
 
 .login-screen{
-text-align:right;
-padding:30px;
+  text-align:right;
+  padding:24px;
 }
 
 .title{
-font-size:28px;
-margin-bottom:20px;
+  font-size:32px;
+  margin-bottom:20px;
+  text-align:right;
 }
 
 .users{
-display:flex;
-flex-direction:column;
-gap:12px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:24px;
 }
 
 .user-btn{
-padding:14px;
-font-size:20px;
-border:none;
-border-radius:12px;
-background:#6b7cff;
-color:white;
-cursor:pointer;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  padding:16px;
+  font-size:20px;
+  border:none;
+  border-radius:14px;
+  background:#6677f0;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,0.12);
 }
 
 .user-btn:hover{
-background:#5363ff;
+  background:#5363ff;
 }
 
-</style>
-<script>
-const supabaseUrl = "https://ijjevasyrybptwsezisf.supabase.co"
-const supabaseKey = "sb_publishable_9CrkiWBuHCSE6EAXmjOnpQ_uvQhB38Y"
+.page-intro{
+  padding:0 24px 24px;
+  line-height:1.6;
+}
 
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
-</script>
+.layout{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  padding:0 24px 24px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 6px 16px rgba(0,0,0,0.08);
+}
+
+.avatar-line{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.avatar{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#eef2ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.section-title h2{
+  margin:0;
+  font-size:28px;
+}
+
+.pill, .badge{
+  font-size:13px;
+  background:#eef2ff;
+  padding:6px 10px;
+  border-radius:999px;
+}
+
+.stack{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.task{
+  background:#f9faff;
+  border:1px solid #e2e8ff;
+  border-radius:14px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.task-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  font-size:22px;
+  font-weight:700;
+}
+
+.task-points{
+  color:#7a5cff;
+  font-size:18px;
+  font-weight:700;
+}
+
+.task-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:none;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:700;
+}
+
+.btn-done{
+  background:#23b26d;
+  color:white;
+}
+
+.btn-skip{
+  background:#ffb547;
+  color:white;
+}
+
+.btn-main{
+  background:#5f6df2;
+  color:white;
+  width:100%;
+}
+
+.score-box{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.score{
+  background:#f8f9ff;
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+
+.n{
+  font-size:28px;
+  font-weight:800;
+}
+
+.mini{
+  color:#666b8a;
+}
+
+.bar{
+  width:100%;
+  height:12px;
+  background:#e9edff;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6a7cff,#8f68ff);
+  border-radius:999px;
+  transition:0.3s;
+}
+
+.leader-list, .reward-list, .monthly-list, .stats-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.leader-row, .reward-row, .month-row, .stats-row{
+  background:#f8f9ff;
+  border-radius:12px;
+  padding:12px;
+}
+
+.hidden{
+  display:none !important;
+}
+</style>
+
 <script>
+const supabaseUrl = "https://ijjevasyrybptwsezisf.supabase.co";
+const supabaseKey = "sb_publishable_9CrkiWBuHCSE6EAXmjOnpQ_uvQhB38Y";
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+let currentUser = null;
+let currentScore = 0;
+let completedCount = 0;
+let skippedCount = 0;
+let newCount = 0;
+
+const rewards = [
+  { points: 20, title: "🎁 הפתעה קטנה" },
+  { points: 50, title: "🍦 פינוק מיוחד" },
+  { points: 80, title: "🎬 בחירת סרט" },
+  { points: 120, title: "👑 פרס גדול" }
+];
+
+function setAvatar(name){
+  const avatarEmoji = document.getElementById("avatarEmoji");
+  if (!avatarEmoji) return;
+
+  if (name === "מפל") avatarEmoji.innerText = "🦋";
+  else if (name === "מעיין") avatarEmoji.innerText = "🌈";
+  else if (name === "אמא") avatarEmoji.innerText = "👑";
+}
+
+function updateScoreUI(){
+  document.getElementById("scorePoints").innerText = currentScore;
+  document.getElementById("scoreDone").innerText = completedCount;
+  document.getElementById("scoreSkipped").innerText = skippedCount;
+  document.getElementById("scoreNew").innerText = newCount;
+
+  const progress = Math.min((currentScore / 120) * 100, 100);
+  document.getElementById("progressFill").style.width = progress + "%";
+
+  renderRewards();
+  renderLeaderboard();
+  renderStats();
+}
+
+function renderRewards(){
+  const box = document.getElementById("rewards");
+  if (!box) return;
+  box.innerHTML = "";
+
+  rewards.forEach(r => {
+    const row = document.createElement("div");
+    row.className = "reward-row";
+    row.innerHTML = `
+      <div>${r.title}</div>
+      <div class="mini">${currentScore >= r.points ? "נפתח ✅" : "נפתח ב-" + r.points + " נק׳"}</div>
+    `;
+    box.appendChild(row);
+  });
+}
+
+function renderLeaderboard(){
+  const box = document.getElementById("leaderboard");
+  if (!box) return;
+  box.innerHTML = `
+    <div class="leader-row">👑 ${currentUser || "—"} מובילה כרגע עם ${currentScore} נקודות</div>
+  `;
+}
+
+function renderStats(){
+  const box = document.getElementById("statsList");
+  if (!box) return;
+  box.innerHTML = `
+    <div class="stats-row">שם: ${currentUser || "—"}</div>
+    <div class="stats-row">הושלמו: ${completedCount}</div>
+    <div class="stats-row">דילוגים: ${skippedCount}</div>
+    <div class="stats-row">משימות חדשות: ${newCount}</div>
+  `;
+}
+
+function renderMonthly(name){
+  const box = document.getElementById("monthly");
+  if (!box) return;
+
+  if (name === "אמא"){
+    box.innerHTML = `
+      <div class="month-row">📅 ארגון מזווה</div>
+      <div class="month-row">📅 סידור מסמכים</div>
+      <div class="month-row">📅 מיון לתרומה</div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div class="month-row">📅 שעת קריאה ארוכה</div>
+      <div class="month-row">📅 סידור ארון</div>
+      <div class="month-row">📅 מיון משחקים / ציוד</div>
+    `;
+  }
+}
+
 async function loadTasks() {
   const { data, error } = await supabaseClient
     .from("tasks")
     .select("*");
 
-  console.log("tasks", data);
+  console.log("tasks", data, error);
 }
 
 async function addTask(name, task, points) {
@@ -61,7 +328,7 @@ async function addTask(name, task, points) {
       { name: name, task: task, points: points, status: "open" }
     ]);
 
-  console.log("added", data);
+  console.log("added", data, error);
 }
 
 async function updateScore(name, points) {
@@ -71,26 +338,51 @@ async function updateScore(name, points) {
       { name: name, points: points }
     ]);
 
-  console.log("score updated", data);
-} 
-loadTasks();
-   async function showTasks(name) {
+  console.log("score updated", data, error);
+}
 
-  document.querySelector(".login-screen").style.display = "none";
-  document.getElementById("mainLayout").style.display = "block";
+async function completeTask(id, points){
+  currentScore += Number(points || 0);
+  completedCount += 1;
+  updateScoreUI();
 
+  const taskCard = document.querySelector('[data-task-id="' + id + '"]');
+  if (taskCard) taskCard.remove();
+
+  if (currentUser) {
+    await updateScore(currentUser, currentScore);
+  }
+}
+
+async function skipTask(id){
+  skippedCount += 1;
+  newCount += 1;
+  updateScoreUI();
+
+  const taskCard = document.querySelector('[data-task-id="' + id + '"]');
+  if (taskCard) taskCard.remove();
+}
+
+async function showTasks(name) {
+  currentUser = name;
+  currentScore = 0;
+  completedCount = 0;
+  skippedCount = 0;
+  newCount = 0;
+
+  const login = document.querySelector(".login-screen");
+  const intro = document.querySelector(".page-intro");
+  const mainLayout = document.getElementById("mainLayout");
   const stack = document.getElementById("taskStack");
   const profileName = document.getElementById("profileName");
-  const avatarEmoji = document.getElementById("avatarEmoji");
 
-  stack.innerHTML = "";
-  profileName.innerText = name;
+  if (login) login.classList.add("hidden");
+  if (intro) intro.classList.add("hidden");
+  if (mainLayout) mainLayout.style.display = "grid";
 
-  if (avatarEmoji) {
-    if (name === "מפל") avatarEmoji.innerText = "🦋";
-    else if (name === "מעיין") avatarEmoji.innerText = "🌈";
-    else if (name === "אמא") avatarEmoji.innerText = "👑";
-  }
+  if (stack) stack.innerHTML = "";
+  if (profileName) profileName.innerText = name;
+  setAvatar(name);
 
   const { data, error } = await supabaseClient
     .from("tasks")
@@ -124,51 +416,53 @@ loadTasks();
   allTasks.forEach(t => {
     const card = document.createElement("div");
     card.className = "task";
+    card.setAttribute("data-task-id", t.id);
 
-    const bonusLabel = t.points >= 20 ? " 🔥 משימת בונוס" : "";
+    const bonusLabel = t.points >= 20 ? "🔥 משימת בונוס" : "";
+    const typeLabel = t.status === "fixed" ? "📌 קבועה" : "🎲 רנדומלית";
 
     card.innerHTML = `
-      <div>${t.task}</div>
-      <div>⭐ ${t.points}${bonusLabel}</div>
-      <button onclick="completeTask('${t.id}', ${t.points})">בוצע</button>
-      <button onclick="skipTask('${t.id}')">דלג</button>
+      <div class="task-top">
+        <div>${t.task}</div>
+        <div class="task-points">⭐ ${t.points}</div>
+      </div>
+      <div class="mini">${typeLabel} ${bonusLabel}</div>
+      <div class="task-actions">
+        <button class="btn btn-done" onclick="completeTask('${t.id}', ${t.points})">✅ בוצע</button>
+        <button class="btn btn-skip" onclick="skipTask('${t.id}')">⏭ דלג</button>
+      </div>
     `;
 
     stack.appendChild(card);
   });
+
+  renderMonthly(name);
+  updateScoreUI();
 }
 
 window.showTasks = showTasks;
-  }
+window.completeTask = completeTask;
+window.skipTask = skipTask;
+
+loadTasks();
 </script>
 
 <div class="login-screen">
+  <h1 class="title">👋 מי נכנס?</h1>
 
-<h1 class="title">👋 מי נכנס?</h1>
-
-<div class="users">
-
-<button class="user-btn" onclick="showTasks('מפל')">
-👧 מפל
-</button>
-
-<button class="user-btn" onclick="showTasks('מעיין')">
-👧 מעיין
-</button>
-
-<button class="user-btn" onclick="showTasks('אמא')">
-👑 אמא
-</button>
-
+  <div class="users">
+    <button class="user-btn" onclick="showTasks('מפל')">👧 מפל</button>
+    <button class="user-btn" onclick="showTasks('מעיין')">👧 מעיין</button>
+    <button class="user-btn" onclick="showTasks('אמא')">👑 אמא</button>
+  </div>
 </div>
 
+<div class="page-intro">
+  🏡 המשימות של משפחת זמר  
+  <br><br>
+  רשימת משימות מתחדשת: אם לא בוצע — זה נשאר. אם מדלגים — מתקבלת משימה חדשה, והמשימה שנדחתה חוזרת לתור ותופיע שוב בהמשך.
 </div>
-🏡 המשימות של משפחת זמר
 
-      
-רשימת משימות מתחדשת: אם לא בוצע — זה נשאר. אם מדלגים — מתקבלת משימה חדשה, והמשימה שנדחתה חוזרת לתור ותופיע שוב בהמשך.
-
-      
 <div class="layout" id="mainLayout" style="display:none;">
   <div class="card">
     <div class="avatar-line">
@@ -178,12 +472,17 @@ window.showTasks = showTasks;
         <div class="mini" id="profileInfo">משימות חכמות + ניקוד + כוכבים</div>
       </div>
     </div>
+
     <div class="section-title">
       <h2>משימות פעילות</h2>
       <span class="pill">✔︎ ביצוע = נקודות · ⏭ דילוג = משימה חדשה</span>
     </div>
+
     <div class="stack" id="taskStack"></div>
-    <div style="margin-top:12px"><button class="btn btn-main" id="resetBoard">איפוס כל המשימות</button></div>
+
+    <div style="margin-top:12px">
+      <button class="btn btn-main" id="resetBoard" onclick="location.reload()">איפוס כל המשימות</button>
+    </div>
   </div>
 
   <div class="stack">
