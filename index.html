@@ -1,58 +1,80 @@
-<!DOCTYPE html>
-<html lang="he">
-<head>
-<meta charset="UTF-8">
-<title>המשימות של משפחת זמר</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-font-family:Arial;
-direction:rtl;
-background:#f5f7ff;
-text-align:center;
-padding:30px;
-}
-.card{
-background:white;
-padding:20px;
-margin:20px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
-}
-button{
-padding:10px 15px;
-border:none;
-border-radius:10px;
-background:#6c63ff;
-color:white;
-font-size:16px;
-}
-</style>
-</head>
 
-<body>
 
-<h1>🏡 המשימות של משפחת זמר</h1>
 
-<div class="card">
-<h2>👧 מפל</h2>
-<p>שיעורי בית</p>
-<p>סידור תיק</p>
-<p>מקלחת</p>
+  
+  
+  
+  
+
+
+  
+
+
+  
+
+    
+
+      
+🏡 המשימות של משפחת זמר
+
+      
+רשימת משימות מתחדשת: אם לא בוצע — זה נשאר. אם מדלגים — מתקבלת משימה חדשה, והמשימה שנדחתה חוזרת לתור ותופיע שוב בהמשך.
+
+      
+
+
+    
+
+
+<div class="layout">
+  <div class="card">
+    <div class="avatar-line">
+      <div class="avatar" id="avatarEmoji">🦋</div>
+      <div>
+        <div id="profileName" style="font-size:24px;font-weight:800">מפל</div>
+        <div class="mini" id="profileInfo">משימות חכמות + ניקוד + כוכבים</div>
+      </div>
+    </div>
+    <div class="section-title">
+      <h2>משימות פעילות</h2>
+      <span class="pill">✔︎ ביצוע = נקודות · ⏭ דילוג = משימה חדשה</span>
+    </div>
+    <div class="stack" id="taskStack"></div>
+    <div style="margin-top:12px"><button class="btn btn-main" id="resetBoard">איפוס כל המשימות</button></div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="section-title"><h2>⭐ נקודות וביצועים</h2><span>✨</span></div>
+      <div class="score-box">
+        <div class="score"><div class="mini">נקודות</div><div class="n" id="scorePoints">0</div></div>
+        <div class="score"><div class="mini">הושלמו</div><div class="n" id="scoreDone">0</div></div>
+        <div class="score"><div class="mini">דילוגים</div><div class="n" id="scoreSkipped">0</div></div>
+        <div class="score"><div class="mini">חדשות</div><div class="n" id="scoreNew">0</div></div>
+      </div>
+      <div class="mini" style="margin-bottom:6px">התקדמות לפרס הגדול</div>
+      <div class="bar"><div class="fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>🏆 טבלת ניצחונות</h2><span class="badge">אלופת השבוע</span></div>
+      <div class="leader-list" id="leaderboard"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>🎁 פרסים אוטומטיים</h2><span class="badge">נפתחים לפי נקודות</span></div>
+      <div class="reward-list" id="rewards"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>📅 משימות חודשיות</h2><span class="badge">20 נק׳</span></div>
+      <div class="monthly-list" id="monthly"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>📊 סטטיסטיקה מהירה</h2><span class="badge">לאמא</span></div>
+      <div class="stats-list" id="statsList"></div>
+      <div class="footer-note">בשלב הבא נוסיף סנכרון בזמן אמת בין כל המכשירים.</div>
+    </div>
+  </div>
 </div>
-
-<div class="card">
-<h2>👧 מעיין</h2>
-<p>שיעורי בית</p>
-<p>סידור תיק</p>
-<p>מקלחת</p>
-</div>
-
-<div class="card">
-<h2>👑 אמא</h2>
-<p>כביסה</p>
-<p>ניקיון מטבח</p>
-</div>
-
-</body>
-</html>
