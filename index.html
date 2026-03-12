@@ -74,23 +74,17 @@ async function updateScore(name, points) {
   console.log("score updated", data);
 } 
 loadTasks();
-  async function showTasks(name) {
-  const mainLayout = document.getElementById("mainLayout");
+   async function showTasks(name) {
+
+  document.querySelector(".login-screen").style.display = "none";
+  document.getElementById("mainLayout").style.display = "block";
+
   const stack = document.getElementById("taskStack");
   const profileName = document.getElementById("profileName");
   const avatarEmoji = document.getElementById("avatarEmoji");
 
-  if (mainLayout) {
-    mainLayout.style.display = "block";
-  }
-
-  if (stack) {
-    stack.innerHTML = "";
-  }
-
-  if (profileName) {
-    profileName.innerText = name;
-  }
+  stack.innerHTML = "";
+  profileName.innerText = name;
 
   if (avatarEmoji) {
     if (name === "מפל") avatarEmoji.innerText = "🦋";
