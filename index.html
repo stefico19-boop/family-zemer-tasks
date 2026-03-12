@@ -75,42 +75,75 @@ async function updateScore(name, points) {
 } 
 loadTasks();
   async function showTasks(name) {
-document.querySelector(".layout").style.display = "grid"
-  const { data, error } = await supabaseClient
-    .from("tasks")
-    .select("*")
-    .eq("name", name)
-    .limit(5)
+
+  document.querySelector(".layout").style.display = "grid"
 
   const stack = document.getElementById("taskStack")
   stack.innerHTML = ""
-document.getElementById("profileName").innerText = name
 
-if (name === "מפל") {
-  document.getElementById("avatarEmoji").innerText = "🦋"
-}
+  document.getElementById("profileName").innerText = name
 
-if (name === "מעיין") {
-  document.getElementById("avatarEmoji").innerText = "🌈"
-}
+  if (name === "מפל") {
+    document.getElementById("avatarEmoji").innerText = "🦋"
+  }
 
-if (name === "אמא") {
-  document.getElementById("avatarEmoji").innerText = "👑"
-}
-  data.forEach(t => {
+  if (name === "מעיין") {
+    document.getElementById("avatarEmoji").innerText = "🌈"
+  }
 
+  if (name === "אמא") {
+    document.getElementById("avatarEmoji").innerText = "👑"
+  }
+
+  // משימות קבועות
+  const { data: fixedTasks } = await supabaseClient
+    .from("tasks")
+    .select("*")
+    .eq("name", name)
+    .eq("status", "fixed")
+
+  // משימות רגילות / רנדומליות
+  const { data: openTasks } = await supabaseClient
+    .from("tasks")
+    .select("*")
+    .eq("name", name)
+    .eq("status", "open")
+
+  let randomTasks = []
+  let bonusTask = null
+
+  if (openTasks && openTasks.length > 0) {
+    const shuffled = openTasks.sort(() => 0.5 - Math.random())
+
+    // 3 משימות רנדומליות רגילות
+    randomTasks = shuffled.filter(t => t.points < 20).slice(0, 3)
+
+    // משימת בונוס אחת אם קיימת
+    bonusTask = shuffled.find(t => t.points >= 20)
+  }
+
+  const allTasks = [
+    ...(fixedTasks || []),
+    ...randomTasks,
+    ...(bonusTask ? [bonusTask] : [])
+  ]
+
+  allTasks.forEach(t => {
     const card = document.createElement("div")
     card.className = "task"
 
+    const bonusLabel = t.points >= 20 ? "🔥 משימת בונוס" : ""
+
     card.innerHTML = `
       <div>${t.task}</div>
-      <div>⭐ ${t.points}</div>
-      <button onclick="completeTask('${t.id}',${t.points})">בוצע</button>
+      <div>⭐ ${t.points} ${bonusLabel}</div>
+      <button onclick="completeTask('${t.id}', ${t.points})">בוצע</button>
       <button onclick="skipTask('${t.id}')">דלג</button>
     `
 
     stack.appendChild(card)
-
+  })
+  }
   })
 
   }
