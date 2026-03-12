@@ -1,5 +1,44 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
 
+body{
+direction:rtl;
+font-family:Heebo, Arial;
+background:#f6f8ff;
+}
+
+.login-screen{
+text-align:right;
+padding:30px;
+}
+
+.title{
+font-size:28px;
+margin-bottom:20px;
+}
+
+.users{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.user-btn{
+padding:14px;
+font-size:20px;
+border:none;
+border-radius:12px;
+background:#6b7cff;
+color:white;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.user-btn:hover{
+background:#5363ff;
+}
+
+</style>
 <script>
 const supabaseUrl = "https://ijjevasyrybptwsezisf.supabase.co"
 const supabaseKey = "sb_publishable_9CrkiWBuHCSE6EAXmjOnpQ_uvQhB38Y"
